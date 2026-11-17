@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Import country data and export a map as SVG or PNG.">
+  <meta name="theme-color" content="#f6f7f4">
+  <title>Country map</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <script defer src="assets/vendor/d3-array.min.js"></script>
+  <script defer src="assets/vendor/d3-geo.min.js"></script>
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#workspace">Skip to map</a>
+<main id="workspace" aria-label="Map editor">
+  <div class="workspace-heading"><a class="guide-link" href="guide.html">Data format</a><div class="export-actions"><label class="export-caption"><input id="include-caption" type="checkbox">Include title &amp; caption</label><button id="export-csv" class="button quiet">↓ CSV</button><button id="export-png" class="button">↓ PNG</button><button id="export-svg" class="button primary">Export SVG</button></div></div>
+  <div class="studio">
+    <aside id="settings" class="sidebar" aria-label="Map settings">
+      <section class="control-section"><div class="section-heading"><h2>Data</h2></div>
+        <button class="upload-button" id="open-import"><span class="upload-icon" aria-hidden="true">↥</span><strong>Import your data</strong><small>CSV, TSV or Excel</small></button>
+        <div class="source-info"><span class="source-dot"></span><span id="source-name">Loading example…</span><button id="clear" class="text-button" aria-label="Clear data">×</button></div>
+        <div class="data-actions"><button id="example" class="text-button">Use example</button><a class="text-button" href="examples/sample.csv" download>Download sample CSV</a></div>
+        <p class="format-note"><strong>2 columns:</strong> Country, Value.<br>Country names or ISO codes; numeric values.</p>
+        <details class="sample-details"><summary>View sample CSV</summary><pre id="sample-preview"></pre></details>
+      </section>
+      <section class="control-section"><div class="section-heading"><h2>Appearance</h2></div>
+        <details class="caption-fields"><summary>Title &amp; caption</summary><label for="map-name">Title</label><input id="map-name" maxlength="70" value="Country values" autocomplete="off"><label for="map-caption">Caption</label><input id="map-caption" maxlength="130" value="Example data — not real statistics" autocomplete="off"></details>
+        <label for="value-label">Value label</label><input id="value-label" maxlength="40" value="Value" autocomplete="off">
+        <div class="label-row"><label id="palette-label">Palette</label><span id="palette-name">Lagoon</span></div>
+        <div id="palettes" class="palettes" role="group" aria-labelledby="palette-label"></div>
+        <details class="advanced"><summary>Fine-tune colors <span>+</span></summary><div class="color-inputs"><label>Low<input id="color-low" type="color" value="#dcefea"></label><label>Mid<input id="color-mid" type="color" value="#60b3a1"></label><label>High<input id="color-high" type="color" value="#14594f"></label><label>No data<input id="color-empty" type="color" value="#e6eae7"></label></div></details>
+        <div class="label-row"><label>Scale</label><button id="auto-range" class="text-button">Auto</button></div>
+        <div class="range-inputs"><label>Min<input id="range-min" type="number" step="any" value="0"></label><label>Mid<input id="range-mid" type="number" step="any" value="50"></label><label>Max<input id="range-max" type="number" step="any" value="100"></label></div>
+        <p id="range-error" class="field-error" role="status"></p>
+        <label class="toggle"><span>Country names</span><input id="labels" type="checkbox" role="switch"></label>
+        <label class="toggle"><span>Legend</span><input id="legend" type="checkbox" role="switch" checked></label>
+      </section>
+    </aside>
+    <div class="main-column">
+      <div class="mobile-actions"><button id="mobile-import" class="button">↥ Import data</button><a href="#settings" class="button quiet">Map settings ↓</a></div>
+      <nav id="regions" class="regions" aria-label="Map region"></nav>
+      <section class="map-panel" aria-label="Map preview">
+        <div class="map-toolbar"><strong id="region-name">World</strong><span id="example-badge" class="badge">EXAMPLE DATA</span></div>
+        <div id="map-mount" class="map-mount" aria-busy="true"><div class="loading">Loading…</div></div>
+        <div id="tooltip" class="tooltip" role="status" hidden></div>
+        <div class="map-bottom"><span id="map-count">Loading map…</span></div>
+      </section>
+      <section class="data-panel" aria-labelledby="data-title"><div class="data-heading"><div><h2 id="data-title">Country values</h2><span id="table-count"></span></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Find a country" aria-label="Find a country"></label></div>
+        <div class="table-scroll"><table><thead><tr><th scope="col">Country / territory</th><th scope="col">ISO</th><th scope="col" id="table-value-label">Value</th></tr></thead><tbody id="table-body"></tbody></table></div>
+        <details id="issues-panel" class="issues" hidden><summary id="issues-summary"></summary><ul id="issues-list"></ul></details>
+      </section>
+    </div>
+  </div>
+</main>
+<dialog id="import-dialog" aria-labelledby="import-title"><form method="dialog" class="dialog-heading"><div><h2 id="import-title">Add your data</h2></div><button class="close-button" aria-label="Close import">×</button></form>
+  <div id="drop-zone" class="drop-zone"><span class="upload-icon" aria-hidden="true">↥</span><label for="file">Choose a file or drop it here</label><input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx"><p>CSV, TSV, XLSX · up to 25 MB</p></div>
+  <div class="paste-label"><label for="paste">Or paste a table</label><a href="guide.html#data-format">Format guide ↗</a></div>
+  <textarea id="paste" spellcheck="false" placeholder="Country,Value&#10;Canada,72&#10;Ethiopia,85&#10;Japan,64"></textarea>
+  <p class="import-hint">2 required columns: Country and Value. Extra columns are ignored. Repeated country values are summed.</p>
+  <p id="import-message" class="field-error" role="status"></p><button class="button primary apply-button" id="apply">Create map <span aria-hidden="true">↗</span></button>
+</dialog>
+<div id="toast" role="status" class="toast" hidden></div>
+<noscript><p class="noscript">Enable JavaScript to create your map. Your data is processed on your device.</p></noscript>
+</body>
+</html>

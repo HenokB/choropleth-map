@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CSV columns, Excel import, and map exports.">
+  <title>Data format</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<main class="guide">
+  <a href="./" class="button back">← Map</a>
+  <h1>Data format</h1>
+  <section id="data-format">
+    <h2>Numeric data: 2 required columns</h2>
+    <pre><code>Country,Value
+Canada,72
+Ethiopia,85
+Japan,88</code></pre>
+    <p><strong>Country:</strong> a country name or ISO code. <strong>Value:</strong> a number. Extra columns are ignored. Zero and negative values work; repeated country rows are summed. Invalid rows are reported.</p>
+    <p><a href="examples/sample.csv" download>Download sample.csv</a> · 2 columns, 22 rows, synthetic values across all seven continents.</p>
+    <h3>Language counts: 2 required columns, 1 optional</h3>
+    <pre><code>Code,Countries Spoken
+en,"Canada,United States"
+fr,"Canada,France"</code></pre>
+    <p><strong>Code</strong> and <strong>Countries Spoken</strong> are required for this format. An optional third column, <strong>Language</strong>, can hold the display name. A Language column can also replace Code. Each code is counted once per country.</p>
+    <p><a href="examples/languages.csv" download>Download the 3-column language example</a></p>
+  </section>
+  <section>
+    <h2>Excel</h2>
+    <p>XLSX uses the same columns. The first 25 nonempty rows of each sheet are searched for headers. Language-code sheets are preferred, then the largest matching sheet. Export a specific sheet as CSV to choose it explicitly. Formulas need saved, cached results; XLS and encrypted workbooks are unsupported.</p>
+  </section>
+  <section>
+    <h2>Export</h2>
+    <p><strong>SVG:</strong> vector artwork with a transparent background. <strong>PNG:</strong> a 2400-pixel-wide image on white. <strong>CSV:</strong> all imported country totals.</p>
+    <p><strong>Include title &amp; caption</strong> controls both the preview and image exports. Edit their text under Appearance → Title &amp; caption. Legend and country names have separate switches. Turn all three off for map outlines and colors only.</p>
+  </section>
+  <section id="map-data">
+    <h2>Map data</h2>
+    <p>242 country and territory features from <a href="https://www.naturalearthdata.com/downloads/50m-cultural-vectors/">Natural Earth 1:50m, v5.1.2</a> (<a href="https://www.naturalearthdata.com/about/terms-of-use/">public domain</a>). Boundaries follow its default de facto representation. Small territories may be generalized or absent.</p>
+    <p>Continent views crop outlying areas; use World for all features. Russia, Türkiye, Kazakhstan, Georgia, and Azerbaijan appear in both Europe and Asia. Offshore territories are grouped geographically. The scale uses all imported values so colors stay comparable between views.</p>
+    <p>Files are processed in your browser. Refreshing clears imported data; export CSV to keep aggregated results.</p>
+  </section>
+</main>
+</body>
+</html>
