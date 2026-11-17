@@ -2,6 +2,9 @@
 
 A choropleth map editor for the world and every continent.
 
+Give it a try here: https://henokb.github.io/choropleth-map/
+
+
 ![Example country map](docs/preview.svg)
 
 Import a spreadsheet, choose a palette, and export a map. No accounts, API keys, tracking, or server-side processing.
